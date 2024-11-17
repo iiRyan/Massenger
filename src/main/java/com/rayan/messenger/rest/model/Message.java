@@ -7,17 +7,16 @@ public class Message {
     private String message;
     private Date created;
     private String author;
-    private static long counter;
 
     public Message() {
     }
 
-    public Message(String message, Date created, String author) {
+    public Message(Long id,String message, String author) {
+        this.id = id;
         this.message = message;
-        this.created = created;
+        this.created = new Date();
         this.author = author;
-        this.id = counter;
-        counter++;
+        
     }
 
     public long getId() {
