@@ -2,24 +2,41 @@ package com.rayan.messenger.rest.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.rayan.messenger.rest.database.Database;
 import com.rayan.messenger.rest.model.Message;
 
 /*
  * Mock service
  */
 public class MessageService {
+ 
+    private Map<Long,Message> messages = Database.getMessages();
     
     public List<Message> getAllMessages(){
-        Message m1 = new Message(1L,"Hello JAX-RS","Rayan");
-        Message m2 = new Message(2L,"Hello OpenLiberty","Jax");
-        Message m3 = new Message(3L,"Hello Java","James Gosling");
-        Message m4 = new Message(4L,"Hello World","Dua");
-        List<Message> messagesList = new ArrayList<>();
-        messagesList.add(m1);
-        messagesList.add(m2);
-        messagesList.add(m3);
-        messagesList.add(m4);
-        return messagesList;
+        return new ArrayList<Message>(messages.values());
+    }
+
+    public Message getMessage(long id){
+        return messages.get(id);
+    }
+
+    public Message addMessage(Message theMessage){
+        theMessage.setId(messages.size() + 1);
+        messages.put(theMessage.getId(), theMessage);
+        return theMessage;
+    }
+
+    public Message updateMessage(Message theMessage){
+        if(theMessage.getId() <= 0){
+            return null;
+        }
+        messages.put(theMessage.getId(), theMessage);
+        return theMessage;
+    }
+
+    public Message removeMessage(long id){
+        return messages.remove(id);
     }
 }
