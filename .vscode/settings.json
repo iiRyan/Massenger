@@ -1,4 +1,8 @@
 {
     "wca.enable": false,
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "cSpell.words": [
+        "apikey",
+        "cloudant"
+    ]
 }

@@ -13,7 +13,15 @@ import com.rayan.messenger.rest.model.Message;
 public class MessageService {
  
     private Map<Long,Message> messages = Database.getMessages();
+
     
+    
+    // public MessageService() {
+    //     messages.put(1L, new Message(1L,"Hello Java","James Gosling"));
+    //     messages.put(2L, new Message(2L,"Hello World","Rayan"));
+    //     messages.put(3L, new Message(3L,"Hello World","Rayan"));
+    // }
+
     public List<Message> getAllMessages(){
         return new ArrayList<Message>(messages.values());
     }
