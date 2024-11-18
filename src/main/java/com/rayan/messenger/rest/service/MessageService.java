@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.rayan.messenger.rest.database.Database;
+import com.rayan.messenger.rest.database.cloudant.CloudantOperation;
 import com.rayan.messenger.rest.model.Message;
 
 /*
@@ -12,9 +13,12 @@ import com.rayan.messenger.rest.model.Message;
  */
 public class MessageService {
  
+    private CloudantOperation operation = new CloudantOperation();
     private Map<Long,Message> messages = Database.getMessages();
 
-    
+    public List<Message> getMessages(){
+        return null;
+    }
     
     // public MessageService() {
     //     messages.put(1L, new Message(1L,"Hello Java","James Gosling"));
@@ -23,24 +27,24 @@ public class MessageService {
     // }
 
     public List<Message> getAllMessages(){
-        return new ArrayList<Message>(messages.values());
+        return operation.getAllMessages();
     }
 
-    public Message getMessage(long id){
-        return messages.get(id);
+    public Message getMessage(String _id){
+        return operation.getMessageById(_id);
     }
 
     public Message addMessage(Message theMessage){
-        theMessage.setId(messages.size() + 1);
-        messages.put(theMessage.getId(), theMessage);
+        // theMessage.set_id(messages.size() + 1);
+        // messages.put(theMessage.get_id(), theMessage);
         return theMessage;
     }
 
     public Message updateMessage(Message theMessage){
-        if(theMessage.getId() <= 0){
-            return null;
-        }
-        messages.put(theMessage.getId(), theMessage);
+        // if(theMessage.get_id() <= 0){
+        //     return null;
+        // }
+        // messages.put(theMessage.get_id(), theMessage);
         return theMessage;
     }
 

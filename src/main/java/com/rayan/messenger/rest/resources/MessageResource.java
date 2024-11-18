@@ -28,8 +28,8 @@ public class MessageResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{messageId}") // method level path annotation
-    public Message getMessage(@PathParam("messageId") long id) {
-        return service.getMessage(id);
+    public Message getMessage(@PathParam("messageId") String _id) {
+        return service.getMessage(_id);
     }
 
     @POST
