@@ -1,7 +1,9 @@
 package com.rayan.messenger.rest.database.cloudant;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.cloud.cloudant.v1.model.AllDocsResult;
@@ -10,6 +12,7 @@ import com.ibm.cloud.cloudant.v1.model.DocumentResult;
 import com.ibm.cloud.cloudant.v1.model.GetDocumentOptions;
 import com.ibm.cloud.cloudant.v1.model.PostAllDocsOptions;
 import com.ibm.cloud.cloudant.v1.model.PostDocumentOptions;
+import com.rayan.messenger.rest.database.cloudant.mapper.MessageMapper;
 import com.rayan.messenger.rest.model.Message;
 
 public class CloudantOperation {
@@ -20,13 +23,13 @@ public class CloudantOperation {
         try {
 
             GetDocumentOptions documentOptions = new GetDocumentOptions.Builder()
-                    .db("messenger_db")
+                    .db(CloudantDBManager.TABLE_BUCKET)
                     .docId(_id)
                     .build();
 
             Document response = CloudantClient.INSTANCE.getCloudantClient().getDocument(documentOptions).execute()
                     .getResult();
-            Message message = objectMapper.readValue(response.toString(), Message.class);
+            Message message = MessageMapper.toMessage(response);
 
             return message;
         } catch (Exception e) {
@@ -42,8 +45,8 @@ public class CloudantOperation {
         try {
             // Create the options for fetching all documents
             PostAllDocsOptions options = new PostAllDocsOptions.Builder()
-                    .db("messenger_db") // Replace with your database name
-                    .includeDocs(true) // Include full document content
+                    .db(CloudantDBManager.TABLE_BUCKET)
+                    .includeDocs(true)
                     .build();
 
             // Execute the query
@@ -72,40 +75,22 @@ public class CloudantOperation {
         return messages;
     }
 
-    // Insert Bucket's objects into CloudantDB.
-    public boolean saveMessage(Message theMessage) {
 
-        DocumentResult result = null;
-        try {
-            // Manually map keys to values , I used this approach bcoz the structure of
-            // Message is fixed
-            // I could use library like Jackson but no need in this case.
-            Document document = new Document();
-            document.put("author", theMessage.getAuthor());
-            document.put("message", theMessage.getMessage());
-            document.put("createdAt", theMessage.getCreated());
 
-            PostDocumentOptions createDocumentOptions = new PostDocumentOptions.Builder()
-                    .db(CloudantDBManager.TABLE_BUCKET)
-                    .document(document)
-                    .build();
+    public String insertMessage(Message theMessage) {
 
-            result = CloudantClient.INSTANCE.getCloudantClient()
-                    .postDocument(createDocumentOptions)
-                    .execute()
-                    .getResult();
-            return result.isOk();
-        } catch (Exception e) {
+        theMessage.setCreated(new Date());
 
-            System.out.println("Error ocurred: " + e);
-            return false;
-        }
+        PostDocumentOptions documentOptions = new PostDocumentOptions.Builder()
+                .db(CloudantDBManager.TABLE_BUCKET)
+                .document(MessageMapper.toDocument(theMessage))
+                .build();
+
+        DocumentResult response = CloudantClient.INSTANCE.getCloudantClient().postDocument(documentOptions)
+                .execute()
+                .getResult();
+        return response.getId();
+
     }
 
-    public static void main(String[] args) {
-        CloudantOperation operation = new CloudantOperation();
-        Message message = new Message("Hello Java", "James Gosling");
-
-        System.out.println(operation.getMessageById("53b77aee35d1a3a2a5cd5382ee15fa6d"));
-    }
 }

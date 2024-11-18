@@ -34,10 +34,8 @@ public class MessageService {
         return operation.getMessageById(_id);
     }
 
-    public Message addMessage(Message theMessage){
-        // theMessage.set_id(messages.size() + 1);
-        // messages.put(theMessage.get_id(), theMessage);
-        return theMessage;
+    public String insertMessage(Message theMessage){
+        return operation.insertMessage(theMessage);
     }
 
     public Message updateMessage(Message theMessage){

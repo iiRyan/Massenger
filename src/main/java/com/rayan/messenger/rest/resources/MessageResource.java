@@ -34,7 +34,7 @@ public class MessageResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Message insertMessage(Message theMessage) {
-        return service.addMessage(theMessage);
+    public String insertMessage(Message theMessage) {
+        return service.insertMessage(theMessage);
     }
 }

@@ -15,13 +15,12 @@ public class Message {
     }
 
     public Message(String message, String author) {
-       
+
         this.message = message;
         this.created = new Date();
         this.author = author;
-        
-    }
 
+    }
 
     public String getMessage() {
         return message;
@@ -60,8 +59,4 @@ public class Message {
         return "Message [_id=" + _id + ", message=" + message + ", created=" + created + ", author=" + author + "]";
     }
 
-
-
-
-    
 }
