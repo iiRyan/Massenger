@@ -10,7 +10,7 @@ import com.ibm.cloud.sdk.core.service.exception.ServiceResponseException;
 
 public class CloudantDBManager {
 
-    public static String TABLE_BUCKET = "messenger_db";
+    public static String TABLE_MESSENGER = "messenger_db";
     private static Cloudant client = CloudantClient.INSTANCE.getCloudantClient();
     private boolean initialized = false;
 
@@ -19,7 +19,7 @@ public class CloudantDBManager {
 
     public void init() {
         if (!isInitialized()) {
-            initDB(TABLE_BUCKET);
+            initDB(TABLE_MESSENGER);
             initialized = true;
         }
 

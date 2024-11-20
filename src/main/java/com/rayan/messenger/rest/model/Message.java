@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
     private String _id;
+    private String _rev;
     private String message;
     private Date created;
     private String author;
@@ -54,9 +55,19 @@ public class Message {
         this._id = _id;
     }
 
+    public String get_rev() {
+        return _rev;
+    }
+
+    public void set_rev(String _rev) {
+        this._rev = _rev;
+    }
+
     @Override
     public String toString() {
-        return "Message [_id=" + _id + ", message=" + message + ", created=" + created + ", author=" + author + "]";
+        return "Message [_id=" + _id + ", _rev=" + _rev + ", message=" + message + ", created=" + created + ", author="
+                + author + "]";
     }
+    
 
 }

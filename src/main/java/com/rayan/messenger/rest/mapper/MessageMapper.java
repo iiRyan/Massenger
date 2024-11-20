@@ -1,4 +1,6 @@
-package com.rayan.messenger.rest.database.cloudant.mapper;
+package com.rayan.messenger.rest.mapper;
+
+import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +10,9 @@ import com.rayan.messenger.rest.model.Message;
 public class MessageMapper {
 
     public static Document toDocument(Message message) {
+        if(message.getCreated() == null){
+            message.setCreated(new Date());
+        }
         Document document = new Document();
         document.put("author", message.getAuthor());
         document.put("message", message.getMessage());
