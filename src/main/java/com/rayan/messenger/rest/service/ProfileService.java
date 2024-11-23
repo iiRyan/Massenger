@@ -1,8 +1,6 @@
 package com.rayan.messenger.rest.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,16 +16,19 @@ import com.ibm.cloud.cloudant.v1.model.PutDocumentOptions;
 import com.ibm.cloud.sdk.core.service.exception.ServiceResponseException;
 import com.rayan.messenger.rest.database.cloudant.CloudantClient;
 import com.rayan.messenger.rest.database.cloudant.CloudantDBManager;
-import com.rayan.messenger.rest.mapper.MessageMapper;
-import com.rayan.messenger.rest.model.Message;
+import com.rayan.messenger.rest.mapper.ProfileMapper;
+import com.rayan.messenger.rest.model.Profile;
 
-public class MessageService {
-
+public class ProfileService {
+   
+    
     private Cloudant client;
     private ObjectMapper objectMapper = new ObjectMapper();
     private CloudantDBManager cloudantDBManager = new CloudantDBManager();
 
-    public MessageService() {
+
+    
+    public ProfileService() {
         cloudantDBManager.init();
     }
 
@@ -39,36 +40,36 @@ public class MessageService {
         return client;
     }
 
-    public Message getMessageById(String _id) {
+    public Profile getProfileById(String _id) {
         if (_id == null) {
             throw new IllegalArgumentException("_id must not be null!");
         }
         try {
 
             GetDocumentOptions documentOptions = new GetDocumentOptions.Builder()
-                    .db(CloudantDBManager.TABLE_MESSENGER)
+                    .db(CloudantDBManager.TABLE_PROFILE)
                     .docId(_id)
                     .build();
 
             Document response = getClient().getDocument(documentOptions).execute()
                     .getResult();
-            Message message = MessageMapper.toMessage(response);
+            Profile message = ProfileMapper.toProfile(response);
 
             return message;
         } catch (ServiceResponseException e) {
-            System.out.println("Err in getMessagebyId: " + e.getMessage());
+            System.out.println("Err: " + e.getMessage());
             return null;
         }
 
     }
 
-    public List<Message> getAllMessages() {
+    public List<Profile> getAllProfiles() {
 
-        List<Message> messages = new ArrayList<>();
+        List<Profile> profileList = new ArrayList<>();
         try {
             // Create the options for fetching all documents
             PostAllDocsOptions options = new PostAllDocsOptions.Builder()
-                    .db(CloudantDBManager.TABLE_MESSENGER)
+                    .db(CloudantDBManager.TABLE_PROFILE)
                     .includeDocs(true)
                     .build();
 
@@ -82,11 +83,11 @@ public class MessageService {
             result.getRows().forEach(row -> {
                 if (row.getDoc() != null) {
                     try {
-                        // Map document JSON to Message object
-                        Message message = objectMapper.readValue(row.getDoc().toString(), Message.class);
-                        messages.add(message);
+                        // Map document JSON to Profile object
+                        Profile profile = objectMapper.readValue(row.getDoc().toString(), Profile.class);
+                        profileList.add(profile);
                     } catch (Exception e) {
-                        System.out.println("Error mapping document to Message: " + e.getMessage());
+                        System.out.println("Error mapping document to Profile: " + e.getMessage());
                     }
                 }
             });
@@ -95,62 +96,39 @@ public class MessageService {
             System.out.println("Error fetching all messages: " + e.getMessage());
         }
 
-        return messages;
+        return profileList;
     }
 
-    public List<Message> getMessageForYear(int year) {
-        List<Message> messagesList = getAllMessages();
-        List<Message> messagesForYear = new ArrayList<>();
-        Calendar cal = Calendar.getInstance();
-
-        for (Message message : messagesList) { // loop through all messages
-            cal.setTime(message.getCreated()); // extract the year from given Date
-            if (cal.get(Calendar.YEAR) == year) {
-                messagesForYear.add(message);
-            }
+    public Profile insertProfile(Profile profile) {
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile must not be null!");
         }
-        return messagesForYear;
-    }
-
-    public List<Message> getAllMessagePaginated(int start, int size) {
-        List<Message> messagesList = getAllMessages();
-        ArrayList<Message> list = new ArrayList<Message>(messagesList);
-        if (start + size > list.size())
-            return new ArrayList<Message>();
-        return list.subList(start, size + 1);
-    }
-
-    public Message insertMessage(Message theMessage) {
-        if (theMessage == null) {
-            throw new IllegalArgumentException("theMessage must not be null!");
-        }
-        theMessage.setCreated(new Date());
 
         PostDocumentOptions documentOptions = new PostDocumentOptions.Builder()
-                .db(CloudantDBManager.TABLE_MESSENGER)
-                .document(MessageMapper.toDocument(theMessage))
+                .db(CloudantDBManager.TABLE_PROFILE)
+                .document(ProfileMapper.toDocument(profile))
                 .build();
 
         DocumentResult response = getClient().postDocument(documentOptions)
                 .execute()
                 .getResult();
 
-        return getMessageById(response.getId());
+        return getProfileById(response.getId());
 
     }
 
-    public Message updateMessage(Message message, String _id) {
+    public Profile updateProfile(Profile profile, String _id) {
         if (client == null) {
             client = CloudantClient.INSTANCE.getCloudantClient();
         }
 
-        Message currentMessage = getMessageById(_id);
+        Profile currentProfile = getProfileById(_id);
 
-        Document document = MessageMapper.toDocument(message);
-        if (currentMessage != null) {
-            String _rev = currentMessage.get_rev();
+        Document document = ProfileMapper.toDocument(profile);
+        if (currentProfile != null) {
+            String _rev = currentProfile.get_rev();
             PutDocumentOptions putDocumentOptions = new PutDocumentOptions.Builder()
-                    .db(CloudantDBManager.TABLE_MESSENGER)
+                    .db(CloudantDBManager.TABLE_PROFILE)
                     .docId(_id)
                     .rev(_rev)
                     .document(document)
@@ -161,23 +139,23 @@ public class MessageService {
                     .getResult();
 
         } else {
-            insertMessage(message);
+            insertProfile(profile);
         }
 
-        return message;
+        return profile;
     }
 
-    public void deleteMessage(String _id) {
+    public void deleteProfile(String _id) {
         if (client == null) {
             client = CloudantClient.INSTANCE.getCloudantClient();
         }
-        Message currentMessage = getMessageById(_id);
+        Profile currentProfile = getProfileById(_id);
 
-        if (currentMessage != null) {
-            String _rev = currentMessage.get_rev();
+        if (currentProfile != null) {
+            String _rev = currentProfile.get_rev();
 
             DeleteDocumentOptions documentOptions = new DeleteDocumentOptions.Builder()
-                    .db(CloudantDBManager.TABLE_MESSENGER)
+                    .db(CloudantDBManager.TABLE_PROFILE)
                     .docId(_id)
                     .rev(_rev)
                     .build();
@@ -187,7 +165,7 @@ public class MessageService {
 
             System.out.println(response);
         } else {
-            System.out.println("Message not found!");
+            System.out.println("Profile not found!");
         }
 
     }

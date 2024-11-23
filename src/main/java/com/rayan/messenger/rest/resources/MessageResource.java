@@ -5,6 +5,7 @@ import java.util.List;
 import com.rayan.messenger.rest.model.Message;
 import com.rayan.messenger.rest.service.MessageService;
 
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/messages") // top level path annotation
@@ -23,17 +25,25 @@ public class MessageResource {
     private MessageService service = new MessageService();
 
     @GET
-    
-    public List<Message> getAllMessages() {
-
+    public List<Message> getAllMessages(@QueryParam("year") int year ,
+                                        @QueryParam("start")int start ,
+                                        @QueryParam("size")int size) {
+        if(year > 0 ){
+            return service.getMessageForYear(year);
+        }
+        if(start > 0 && size > 0){
+            System.out.println("Insise size");
+            return service.getAllMessagePaginated(start, size);
+        }
         return service.getAllMessages();
     }
+
+
 
     @GET
     @Path("/{messageId}") // method level path annotation
     public Message getMessage(@PathParam("messageId") String _id) {
-        System.out.println("_id: "+_id);
-        return service.getMessage(_id);
+        return service.getMessageById(_id);
     }
 
     @POST
