@@ -19,10 +19,9 @@ public class AnnotationsExample {
 
     @GET
     @Path("annotations")
-    public String getParamsUsingAnnotations(@MatrixParam("param") String matrixParam, // matrixParam example:
-                                                                                      // /injectdemo/annotations;param=value
-            @HeaderParam("authSessionID") String header,
-            @CookieParam("name") String name) {
+    public String getParamsUsingAnnotations(@MatrixParam("param") String matrixParam, // matrixParam example: /injectdemo/annotations;param=value
+                                            @HeaderParam("authSessionID") String header,
+                                            @CookieParam("name") String name) {
 
         return "Matrix Param: " + matrixParam + " HeaderParam: " + header + " CookieParam: " + name;
 

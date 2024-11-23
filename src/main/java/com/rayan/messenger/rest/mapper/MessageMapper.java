@@ -10,13 +10,16 @@ import com.rayan.messenger.rest.model.Message;
 public class MessageMapper {
 
     public static Document toDocument(Message message) {
-        if(message.getCreated() == null){
+        if (message.getCreated() == null) {
             message.setCreated(new Date());
         }
         Document document = new Document();
         document.put("author", message.getAuthor());
         document.put("message", message.getMessage());
         document.put("created", message.getCreated());
+        if (message.getComments() != null) {
+            document.put("comments", message.getComments());
+        }
         return document;
     }
 

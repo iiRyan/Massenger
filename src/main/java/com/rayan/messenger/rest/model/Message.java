@@ -1,8 +1,15 @@
 package com.rayan.messenger.rest.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
@@ -11,6 +18,7 @@ public class Message {
     private String message;
     private Date created;
     private String author;
+    private List<Comment> comments = new ArrayList<>();
 
     public Message() {
     }
@@ -66,8 +74,18 @@ public class Message {
     @Override
     public String toString() {
         return "Message [_id=" + _id + ", _rev=" + _rev + ", message=" + message + ", created=" + created + ", author="
-                + author + "]";
+                + author + ", comments=" + comments + "]";
     }
+
+    // @JsonIgnore // Prevent Comment data from show up when call Message object only.
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     
 
 }

@@ -26,7 +26,7 @@ public class MessageService {
     private Cloudant client;
     private ObjectMapper objectMapper = new ObjectMapper();
     private CloudantDBManager cloudantDBManager = new CloudantDBManager();
-
+    
     public MessageService() {
         cloudantDBManager.init();
     }
@@ -124,6 +124,7 @@ public class MessageService {
         if (theMessage == null) {
             throw new IllegalArgumentException("theMessage must not be null!");
         }
+
         theMessage.setCreated(new Date());
 
         PostDocumentOptions documentOptions = new PostDocumentOptions.Builder()
@@ -140,6 +141,8 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message, String _id) {
+        System.out.println("Message Service "+message);
+
         if (client == null) {
             client = CloudantClient.INSTANCE.getCloudantClient();
         }
