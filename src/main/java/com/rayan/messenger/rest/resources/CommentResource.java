@@ -14,6 +14,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/") // Class level annotation is optional for sub resources.
 @Consumes(MediaType.APPLICATION_JSON)
@@ -29,9 +31,9 @@ public class CommentResource {
     }
 
     @POST
-    public void addComment(@PathParam("messageId") String _id,Comment comment) {
-        System.out.println(comment);
+    public Response addComment(@PathParam("messageId") String _id,Comment comment) {
         service.addCommentToMessage(_id, comment);
+        return Response.status(Status.CREATED).build();
     }
 
     @PUT
@@ -42,7 +44,8 @@ public class CommentResource {
 
     @DELETE
     @Path("/{commentId}")
-    public void deleteComment(@PathParam("messageId") String _id,@PathParam("commentId") String commentId){
+    public Response deleteComment(@PathParam("messageId") String _id,@PathParam("commentId") String commentId){
         service.deleteComment(_id, commentId);
+        return Response.status(Status.NO_CONTENT).build();
     }
 }
