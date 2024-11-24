@@ -36,7 +36,7 @@ public class CommentService {
         Message message = service.getMessageById(messageId);
         if (message != null) {
             for (Comment comment : message.getComments()) {
-                if (comment.get_id().equals(commentId)) {
+                if (commentId.equals(comment.get_id())) {
 
                     comment.setComment(updatedComment.getComment());
                     comment.setAuthor(updatedComment.getAuthor());
@@ -74,5 +74,4 @@ public class CommentService {
         }
         service.updateMessage(message, messageId);
     }
-
 }

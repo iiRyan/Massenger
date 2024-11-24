@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.cloud.cloudant.v1.Cloudant;
 import com.ibm.cloud.cloudant.v1.model.AllDocsResult;
@@ -18,6 +20,7 @@ import com.ibm.cloud.cloudant.v1.model.PutDocumentOptions;
 import com.ibm.cloud.sdk.core.service.exception.ServiceResponseException;
 import com.rayan.messenger.rest.database.cloudant.CloudantClient;
 import com.rayan.messenger.rest.database.cloudant.CloudantDBManager;
+import com.rayan.messenger.rest.exception.DataNotFoundException;
 import com.rayan.messenger.rest.mapper.MessageMapper;
 import com.rayan.messenger.rest.model.Message;
 
@@ -26,7 +29,7 @@ public class MessageService {
     private Cloudant client;
     private ObjectMapper objectMapper = new ObjectMapper();
     private CloudantDBManager cloudantDBManager = new CloudantDBManager();
-    
+
     public MessageService() {
         cloudantDBManager.init();
     }
@@ -44,7 +47,6 @@ public class MessageService {
             throw new IllegalArgumentException("_id must not be null!");
         }
         try {
-
             GetDocumentOptions documentOptions = new GetDocumentOptions.Builder()
                     .db(CloudantDBManager.TABLE_MESSENGER)
                     .docId(_id)
@@ -56,8 +58,10 @@ public class MessageService {
 
             return message;
         } catch (ServiceResponseException e) {
-            System.out.println("Err in getMessagebyId: " + e.getMessage());
-            return null;
+            if (e.getStatusCode() == 404) {
+                throw new DataNotFoundException("Message with _id: " + _id + " not found!");
+            }
+            throw new RuntimeException("An unexpected error occurred: " + e.getMessage(), e);
         }
 
     }
@@ -94,7 +98,6 @@ public class MessageService {
         } catch (Exception e) {
             System.out.println("Error fetching all messages: " + e.getMessage());
         }
-
         return messages;
     }
 
@@ -126,7 +129,6 @@ public class MessageService {
         }
 
         theMessage.setCreated(new Date());
-
         PostDocumentOptions documentOptions = new PostDocumentOptions.Builder()
                 .db(CloudantDBManager.TABLE_MESSENGER)
                 .document(MessageMapper.toDocument(theMessage))
@@ -141,12 +143,6 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message, String _id) {
-        System.out.println("Message Service "+message);
-
-        if (client == null) {
-            client = CloudantClient.INSTANCE.getCloudantClient();
-        }
-
         Message currentMessage = getMessageById(_id);
 
         Document document = MessageMapper.toDocument(message);
@@ -164,16 +160,14 @@ public class MessageService {
                     .getResult();
 
         } else {
+            // if message not found insert it.
             insertMessage(message);
         }
-
         return message;
     }
 
     public void deleteMessage(String _id) {
-        if (client == null) {
-            client = CloudantClient.INSTANCE.getCloudantClient();
-        }
+
         Message currentMessage = getMessageById(_id);
 
         if (currentMessage != null) {
@@ -190,7 +184,7 @@ public class MessageService {
 
             System.out.println(response);
         } else {
-            System.out.println("Message not found!");
+            throw new DataNotFoundException("Message with _id: " + _id + " not found!");
         }
 
     }
