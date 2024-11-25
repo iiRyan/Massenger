@@ -2,9 +2,7 @@ package com.rayan.messenger.rest.resources;
 
 import java.util.List;
 
-import com.rayan.messenger.rest.model.Message;
 import com.rayan.messenger.rest.model.Profile;
-import com.rayan.messenger.rest.service.MessageService;
 import com.rayan.messenger.rest.service.ProfileService;
 
 import jakarta.ws.rs.Consumes;
@@ -16,6 +14,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/profiles") // top level path annotation
 @Consumes(MediaType.APPLICATION_JSON)
@@ -39,8 +39,9 @@ public class ProfileResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Profile insertProfile(Profile profile) {
-        return service.insertProfile(profile);
+    public Response insertProfile(Profile profile) {
+        Profile updatedProfile = service.insertProfile(profile);
+        return Response.ok(updatedProfile).build();
     }
 
     @PUT
@@ -52,7 +53,9 @@ public class ProfileResource {
 
     @DELETE
     @Path("/{profileId}")
-    public void deleteProfile(@PathParam("profileId") String _id) {
+    public Response deleteProfile(@PathParam("profileId") String _id) {
         service.deleteProfile(_id);
+        return Response.status(Status.NO_CONTENT)
+        .build();
     }
 }

@@ -11,6 +11,7 @@ public class ProfileMapper {
     public static Document toDocument(Profile profile) {
 
         Document document = new Document();
+        document.put("_id", profile.get_id());
         document.put("firstName", profile.getFirstName());
         document.put("lastName", profile.getLastName());
         document.put("email", profile.getEmail());

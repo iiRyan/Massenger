@@ -2,14 +2,11 @@ package com.rayan.messenger.rest.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.xml.bind.annotation.XmlTransient;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
@@ -19,6 +16,7 @@ public class Message {
     private Date created;
     private String author;
     private List<Comment> comments = new ArrayList<>();
+    private List<Link> links = new ArrayList<>();
 
     public Message() {
     }
@@ -28,7 +26,6 @@ public class Message {
         this.message = message;
         this.created = new Date();
         this.author = author;
-
     }
 
     public String getMessage() {
@@ -47,13 +44,7 @@ public class Message {
         this.created = created;
     }
 
-    public String getAuthor() {
-        return author;
-    }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
 
     public String get_id() {
         return _id;
@@ -77,7 +68,6 @@ public class Message {
                 + author + ", comments=" + comments + "]";
     }
 
-    // @JsonIgnore // Prevent Comment data from show up when call Message object only.
     public List<Comment> getComments() {
         return comments;
     }
@@ -86,6 +76,29 @@ public class Message {
         this.comments = comments;
     }
 
+    
+    public void addLinks(String url,String rel){
+        Link link = new Link();
+        link.setLink(url);
+        link.setRel(rel);
+        links.add(link);
+    }
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
     
 
 }

@@ -1,6 +1,6 @@
 package com.rayan.messenger.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class Profile {
     private String _id;

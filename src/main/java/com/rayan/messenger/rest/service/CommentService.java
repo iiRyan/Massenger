@@ -9,8 +9,11 @@ import com.rayan.messenger.rest.model.Comment;
 import com.rayan.messenger.rest.model.Message;
 
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 
 public class CommentService {
+
     private MessageService service = new MessageService();
 
     public void addCommentToMessage(String messageId, Comment comment) {
@@ -27,7 +30,9 @@ public class CommentService {
 
     public List<Comment> getMessageComments(String messageId) {
         Message message = service.getMessageById(messageId);
-        System.out.println("Message Comments: " + message.getComments());
+        if(message == null){
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
         return message.getComments();
     }
 
@@ -52,11 +57,7 @@ public class CommentService {
 
     public void deleteComment(String messageId, String commentId) {
         Message message = service.getMessageById(messageId);
-
-        if (message == null) {
-            throw new NotFoundException("Message not found!");
-        }
-
+        
         Iterator<Comment> iterator = message.getComments().iterator();
         boolean commentFound = false;
 

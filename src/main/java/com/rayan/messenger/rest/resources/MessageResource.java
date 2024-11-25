@@ -41,12 +41,16 @@ public class MessageResource {
 
     @GET
     @Path("/{messageId}") // method level path annotation
-    public Message getMessage(@PathParam("messageId") String _id) {
-        return service.getMessageById(_id);
+    public Message getMessage(@PathParam("messageId") String _id, @Context UriInfo uriInfo) {
+        Message message = service.getMessageById(_id);
+        getUriForSelf(_id, uriInfo, message);
+        getUriForProfile(_id, uriInfo, message);
+
+        return message;
     }
 
     @POST
-    public Response insertMessage(Message theMessage,@Context UriInfo uriInfo) {
+    public Response insertMessage(Message theMessage, @Context UriInfo uriInfo) {
         Message newMessage = service.insertMessage(theMessage);
         String newId = newMessage.get_id();
         URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
@@ -75,5 +79,23 @@ public class MessageResource {
     @Path("/{messageId}/comments")
     public CommentResource getComment() {
         return new CommentResource();
+    }
+
+
+    private void getUriForSelf(String _id, UriInfo uriInfo, Message message) {
+        String uri = uriInfo.getBaseUriBuilder() // http://localhost:9080/messenger/api/
+                    .path(MessageResource.class) // /messages
+                    .path(_id) // /{messageId}
+                    .build()
+                    .toString();
+            message.addLinks(uri, "self");
+    }
+    private void getUriForProfile(String _id, UriInfo uriInfo, Message message) {
+        String uri = uriInfo.getBaseUriBuilder() // http://localhost:9080/messenger/api/
+                    .path(ProfileResource.class) // /profiles
+                    .path(message.getAuthor()) // /{profileName}
+                    .build()
+                    .toString();
+            message.addLinks(uri, "profile");
     }
 }
