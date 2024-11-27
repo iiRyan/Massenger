@@ -49,3 +49,10 @@ Messenger is a RESTful API service built using Java with JAX-RS to manage messag
 ```bash
 git clone git@github.com:iiRyan/Massenger.git
 cd Massenger
+
+export CLOUDANT_URL="<your-cloudant-url>"
+export APIKEY="<your-cloudant-api-key>"
+
+mvn clean install
+
+mvn liberty:run
