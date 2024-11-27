@@ -21,7 +21,6 @@ public class CloudantDBManager {
     }
 
     public void init() {
-        System.out.println("initialized value: " + initialized);
         if (!isInitialized()) {
             initDB(TABLE_MESSENGER);
             initDB(TABLE_PROFILE);
