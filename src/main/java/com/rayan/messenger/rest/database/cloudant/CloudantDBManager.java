@@ -15,16 +15,22 @@ public class CloudantDBManager {
     private static Cloudant client = CloudantClient.INSTANCE.getCloudantClient();
     private boolean initialized = false;
 
+    private static final CloudantDBManager instance = new CloudantDBManager();
+
     public CloudantDBManager() {
     }
 
     public void init() {
+        System.out.println("initialized value: " + initialized);
         if (!isInitialized()) {
             initDB(TABLE_MESSENGER);
             initDB(TABLE_PROFILE);
-            initialized = true;
+            this.initialized = true;
         }
+    }
 
+    public static CloudantDBManager getInstance() {
+        return instance;
     }
 
     private void initDB(String dbName) {

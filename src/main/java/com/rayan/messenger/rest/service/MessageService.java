@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.cloud.cloudant.v1.Cloudant;
@@ -28,7 +27,7 @@ public class MessageService {
 
     private Cloudant client;
     private ObjectMapper objectMapper = new ObjectMapper();
-    private CloudantDBManager cloudantDBManager = new CloudantDBManager();
+    private static CloudantDBManager cloudantDBManager = CloudantDBManager.getInstance();
 
     public MessageService() {
         cloudantDBManager.init();
