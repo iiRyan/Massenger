@@ -45,6 +45,7 @@ public class MessageResource {
         Message message = service.getMessageById(_id);
         getUriForSelf(_id, uriInfo, message);
         getUriForProfile(_id, uriInfo, message);
+        getUriForComments(_id, uriInfo, message);
 
         return message;
     }
@@ -77,25 +78,36 @@ public class MessageResource {
 
     // Sub Resource
     @Path("/{messageId}/comments")
-    public CommentResource getComment() {
+    public CommentResource getCommentResource() {
         return new CommentResource();
     }
 
-
     private void getUriForSelf(String _id, UriInfo uriInfo, Message message) {
         String uri = uriInfo.getBaseUriBuilder() // http://localhost:9080/messenger/api/
-                    .path(MessageResource.class) // /messages
-                    .path(_id) // /{messageId}
-                    .build()
-                    .toString();
-            message.addLinks(uri, "self");
+                .path(MessageResource.class) // /messages
+                .path(_id) // /{messageId}
+                .build()
+                .toString();
+        message.addLinks(uri, "self");
     }
+
     private void getUriForProfile(String _id, UriInfo uriInfo, Message message) {
         String uri = uriInfo.getBaseUriBuilder() // http://localhost:9080/messenger/api/
-                    .path(ProfileResource.class) // /profiles
-                    .path(message.getAuthor()) // /{profileName}
-                    .build()
-                    .toString();
-            message.addLinks(uri, "profile");
+                .path(ProfileResource.class) // /profiles
+                .path(message.getAuthor()) // /{profileName}
+                .build()
+                .toString();
+        message.addLinks(uri, "profile");
+    }
+
+    private void getUriForComments(String _id, UriInfo uriInfo, Message message) {
+        String uri = uriInfo.getBaseUriBuilder() // http://localhost:9080/messenger/api/
+                .path(MessageResource.class) // /messages
+                .path(MessageResource.class,"getCommentResource") // /{messageId}/comments
+                .path(CommentResource.class) // comment class level path it will be "/" doesn't hurt to add it here :).
+                .resolveTemplate("messageId",message.get_id()) // to pull the @pathParam of getCommentResource method.
+                .build()
+                .toString();
+        message.addLinks(uri, "comments");
     }
 }
